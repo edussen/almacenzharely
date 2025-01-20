@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta productos - Boundless Studios</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body {
+            font-family: "Montserrat", sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .left-section,
+        .right-section {
+            padding-top: 10px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px;
+
+        }
+
+        .left-section {
+            flex: 3;
+        }
+
+        .right-section {
+            flex: 1;
+            background: #f0f2fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .header div {
+            flex: 1 1 calc(50% - 10px);
+            margin: 1px;
+        }
+
+        .section h3 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: #3d3d3d;
+        }
+
+        .section p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .price-info {
+            padding: 15px;
+            text-align: center;
+            width: 240px;
+        }
+
+        .price-info p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .price-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .highlight {
+            color: green;
+            font-weight: bold;
+        }
+
+        .tag-image {
+            width: 100%;
+            max-width: 240px;
+            height: 240px;
+            border: 3px dashed #ddd;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: right;
+            padding: 10px;
+        }
+
+        .form-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-actions .btn-save {
+            margin-right: 10px;
+            background-image: linear-gradient(to bottom, #107ccf, #0c5f9e);
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+
+            background-color: #007bff;
+            color: #fff;
+            transition: all 0.3s ease;
+
+        }
+
+        .form-actions .btn-save:hover {
+            background-image: linear-gradient(to bottom, #158AE3, #1371B8);
+
+            /* Cambiar el gradiente al pasar el mouse */
+            /* Aumentar el tamaño al pasar el mouse */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+            /* Sombra más pronunciada */
+        }
+
+        .form-actions .btn-close {
+            background-color: #6c757d;
+            color: white;
+            background-image: linear-gradient(to bottom, #6C757D, #4C535A);
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+
+            background-color: #007bff;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .form-actions .btn-close:hover {
+            background-image: linear-gradient(to bottom, #879098, #5F6871);
+
+            /* Cambiar el gradiente al pasar el mouse */
+            /* Aumentar el tamaño al pasar el mouse */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+            /* Sombra más pronunciada */
+        }
+        #error-container {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			z-index: 10000;
+			/* Asegurar que las notificaciones estén en la parte superior */
+		}
+
+		.error-message {
+			padding: 15px 25px;
+			/* Aumentar el relleno */
+			border-radius: 8px;
+			/* Aumentar el radio de borde */
+			margin-top: 15px;
+			/* Aumentar el espacio entre notificaciones */
+			opacity: 0;
+			animation: slideIn 0.5s ease forwards, fadeOut 2s 3.5s ease forwards;
+			/* Animaciones de entrada y salida */
+			font-size: 16px;
+			/* Aumentar el tamaño del texto */
+		}
+
+		.error-message.error {
+			background-color: #ff6666;
+			color: #ffffff;
+		}
+
+		.error-message.warning {
+			background-color: #ffcc66;
+			color: #333333;
+		}
+
+		.error-message.success {
+			background-color: #66cc66;
+			color: #ffffff;
+		}
+
+		@keyframes slideIn {
+			from {
+				transform: translateY(-50px);
+				opacity: 0;
+			}
+
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		@keyframes fadeOut {
+			from {
+				opacity: 1;
+			}
+
+			to {
+				opacity: 0;
+			}
+		}
+    </style>
+
+</head>
+<body>
+    <div id="error-container"></div>
+	<div class="overlay" id="spiner" style="display: '';">
+		<div class="loading-spinner"></div>
+	</div>
+    <p
+        style="display: none;width: 550px;font-size: 23px;color: #3f87b7;font-weight: 800;padding-bottom: 13px;margin-left: 15px;   margin-top: 30px;">
+        Buscar productos</p>
+    <input disabled
+        style="width: 300px;display: none;padding: 8px;margin-left: 25px;padding-right: 30px;box-sizing: border-box;box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);border: 1px solid #ccc;border-radius: 4px;background-color: white;"
+        type="text" id="barcodeInput">
+
+    <div id="searchResults"></div> <!-- Aquí se mostrarán los resultados -->
+    <div id="_empiezaound" style="text-align: center;">
+        <i style="color: #949494;padding-right: 10px;font-size: 180px;padding-top: 5px;padding-bottom: 20px;"
+            class="icono fa fa-barcode" aria-hidden="true"></i>
+
+        <h1 style="font-size: 2em;color: #949494;">Empieza a buscar productos</h1>
+        <p style="font-size: 1.2em;color: #666">Usa tu lector de barras y empieza a buscar productos de Siigo Nube.
+        </p>
+        <img style="width: 300px;height: 300px;opacity: 0.3;" src="bggames.png" alt="">
+
+    </div>
+    <div id="_denuevoFound" style="text-align: center;display: none;">
+        <i style="color: #c77700;padding-right: 10px;font-size: 180px;padding-top: 5px;padding-bottom: 20px;"
+            class="icono fa fa-link" aria-hidden="true"></i>
+
+        <h1 style="font-size: 2em;color: #c77700;">Verificación</h1>
+        <p style="font-size: 1.2em;color: #666">Pase nuevamente el producto por el lector de código de barras.
+        </p>
+    </div>
+    <div id="_yesFound" style="text-align: center;display: none;">
+        <i style="color: #39bd1f;padding-right: 10px;font-size: 180px;padding-top: 5px;padding-bottom: 20px;"
+            class="icono fa fa-check" aria-hidden="true"></i>
+
+        <h1 style="font-size: 2em;color: #39bd1f;">Producto encontrado</h1>
+        <p style="font-size: 1.2em;color: #666">Este producto se encuentra en la base de datos de Siigo Nube.
+        </p>
+    </div>
+    <div id="_noFound" style="text-align: center;display: none;">
+        <i style="color: #ff2525;padding-right: 10px;font-size: 180px;padding-top: 5px;padding-bottom: 20px;"
+            class="icono fa fa-broom" aria-hidden="true"></i>
+
+        <h1 style="font-size: 2em;color: #ff2525;">Producto no encontrado</h1>
+        <p style="font-size: 1.2em;color: #666">Lo sentimos, el producto que buscas no está disponible en este momento.
+        </p>
+    </div>
+    <div id="_maincontainer" class="container" style="display: none;">
+
+        <div class="left-section">
+            <p id="_mainName" style="width: 550px;font-size: 23px;color: #3f87b7;font-weight: 800;padding-bottom: 13px">
+                COMPAS ECOPLASTICO AZUL PELIKAN</p>
+            <p style="color: #3d3d3d;font-weight: 800;padding-left: 15px;">Datos básicos</p>
+
+            <div style="padding-left: 25px;" class="header">
+
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Código</p>
+                    <p id="_code"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;;color: #212121;font-size: 15px;font-weight: 400;">
+                        9</p>
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Tipo de ítem</p>
+                    <p id="_type"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;color: #212121;font-size: 15px;font-weight: 400;">
+                        9</p>
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Categoría</p>
+                    <p id="_categority"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;color: #212121;font-size: 15px;font-weight: 400;">
+                        9</p>
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Unidad de medida</p>
+                    <p id="_unit"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;color: #212121;font-size: 15px;font-weight: 400;">
+                        9</p>
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Código de barras</p>
+                    <p id="_barcode"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;color: #212121;font-size: 15px;font-weight: 400;">
+                        9</p>
+                </div>
+            </div>
+            <p style="color: #3d3d3d;font-weight: 800;padding-left: 15px;;">Información de precio</p>
+
+            <div style="padding-left: 25px;" class="header">
+
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Precio de venta</p>
+                    <p id="_price"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;;color: #212121;font-size: 15px;font-weight: 400;">
+                        9</p>
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Impuesto Cargo</p>
+                    <p id="_tax"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;color: #212121;font-size: 15px;font-weight: 400;">
+                        9</p>
+                </div>
+
+            </div>
+
+            <div style="margin-top: 20px; display: flex; align-items: center;padding-left: 15px;">
+                <div style="display: flex;">
+                    <i style="color: #0f75c3;padding-right: 10px;font-size: 15px;padding-top: 5px;"
+                        class="icono fa fa-tag" aria-hidden="true"></i>
+                    <div class="ml-2 mt-2" style="display: flex; flex-direction: column;">
+                        <label style="font-size: 15px; color: rgb(100, 100, 100);font-weight: 600;"> Ítem activado
+                        </label>
+                        <label class="label-status activated" style="font-size: 12px;font-weight: 700;color: #0f75c3;">
+                            Activado </label>
+                    </div>
+                </div>
+                <div style="display: flex;padding-left: 15px;">
+                    <i style="color: #0f75c3;padding-right: 10px;font-size: 15px;padding-top: 5px;"
+                        class="icono fa fa-slash" aria-hidden="true"></i>
+                    <div class="ml-2 mt-2" style="display: flex; flex-direction: column;">
+                        <label style="font-size: 15px; color: rgb(100, 100, 100);font-weight: 600;"> Venta en negativo
+                        </label>
+                        <label class="label-status activated" style="font-size: 12px;font-weight: 700;color: #0f75c3;">
+                            Activado </label>
+                    </div>
+                </div>
+                <div style="display: flex;padding-left: 15px;">
+                    <i style="color: #0f75c3;padding-right: 10px;font-size: 15px;padding-top: 5px;"
+                        class="icono fa fa-boxes" aria-hidden="true"></i>
+                    <div class="ml-2 mt-2" style="display: flex; flex-direction: column;">
+                        <label style="font-size: 15px; color: rgb(100, 100, 100);font-weight: 600;"> Ítem inventariable
+                        </label>
+                        <label class="label-status activated" style="font-size: 12px;font-weight: 700;color: #0f75c3;">
+                            Activado </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="tag-image">Imagen</div>
+            <div class="price-info">
+                <p style="font-size: 13px;text-align: left;color: #334155;font-weight: 400;">Precio Total</p>
+                <p id="_pricetotal" class="price-total"
+                    style="font-size: 24px;text-align: left;;color: #334155;font-weight: 600;">$4.500
+                    COP</p>
+                <p style="font-size: 13px;text-align: right;color: #334155;font-weight: 400;padding-top:35px">Impuesto
+                </p>
+                <p class="price-total" style="font-size: 18px;text-align: right;;color: #334155;font-weight: 600;">
+                    Ninguno</p>
+                <p style="font-size: 13px;text-align: right;color: #334155;font-weight: 400;padding-top: 10px;">Precio
+                    sin impuesto</p>
+                <p id="_priceNoTaxes" class="price-total"
+                    style="font-size: 18px;text-align: right;;color: #334155;font-weight: 600;">
+                    $4.500 COP</p>
+            </div>
+        </div>
+    </div>
+    <div id="_maincontainerEdit" class="container" style="display: none;">
+
+        <div class="left-section">
+            <input
+                style="width: 510px;padding: 8px;margin-left: 10px;margin-top: 16px;padding-right: 30px;box-sizing: border-box;box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);border: 1px solid #ccc;border-radius: 4px;background-color: white;"
+                type="text" id="_nameEdit" placeholder="Nombre del producto...">
+            <p style="color: #3d3d3d;font-weight: 800;padding-left: 15px;">Datos básicos</p>
+
+            <div style="padding-left: 25px;" class="header">
+
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Código</p>
+                    <input id="_codeEdit"
+                        style="width: 225px;padding: 8px;padding-right: 30px;box-sizing: border-box;box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);border: 1px solid #ccc;border-radius: 4px;background-color: white;"
+                        type="text" id="barcodeInput">
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Tipo de ítem</p>
+                    <p id="_typeEdit"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;;color: #212121;font-size: 15px;font-weight: 400;">
+                        Product</p>
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Categoría</p>
+                    <select id="_categorityEdit"
+                        style="width: 225px;padding: 8px;padding-right: 30px;box-sizing: border-box;border: 1px solid #ccc;border-radius: 4px;background-color: white;box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);"
+                         name="Código Impuesto Cargo" required>
+                        <option value="" seleted disabled>Seleccione una opción</option required>
+                        <option value="" seleted>Ninguno</option>
+
+                    </select>
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Unidad de medida</p>
+                    <p id="_unitEdit"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;;color: #212121;font-size: 15px;font-weight: 400;">
+                        Unidad</p>
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Código de barras</p>
+                    <input id="_barcodeEdit"
+                        style="width: 225px;padding: 8px;padding-right: 30px;box-sizing: border-box;box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);border: 1px solid #ccc;border-radius: 4px;background-color: white;"
+                        type="text">
+
+
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">_idEdit</p>
+                    <input id="_idEdit"
+                        style="width: 225px;padding: 8px;padding-right: 30px;box-sizing: border-box;box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);border: 1px solid #ccc;border-radius: 4px;background-color: white;"
+                        type="text">
+
+
+                </div>
+            </div>
+            <p style="color: #3d3d3d;font-weight: 800;padding-left: 15px;;">Información de precio</p>
+
+            <div style="padding-left: 25px;" class="header">
+
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Precio de venta</p>
+                    <input id="_precioEdit"
+                        style="width: 225px;padding: 8px;padding-right: 30px;box-sizing: border-box;box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);border: 1px solid #ccc;border-radius: 4px;background-color: white;"
+                        type="text" oninput="_priceChanged()">
+                </div>
+                <div>
+                    <p style="color: #3d3d3d;;font-weight: 600;font-size: 15px;">Impuesto Cargo</p>
+                    <p id="_tax"
+                        style="border-bottom: 1.7px solid #dadada;width: 225px;padding-left: 7px;padding-bottom: 8px;color: #212121;font-size: 15px;font-weight: 400;">
+                        Ninguno</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="tag-image">Imagen</div>
+            <div class="price-info">
+                <p style="font-size: 13px;text-align: left;color: #334155;font-weight: 400;">Precio Total</p>
+                <p id="_precioTotalEdit" class="price-total"
+                    style="font-size: 24px;text-align: left;;color: #334155;font-weight: 600;">$-
+                    COP</p>
+                <p style="font-size: 13px;text-align: right;color: #334155;font-weight: 400;padding-top:35px">Impuesto
+                </p>
+                <p class="price-total" style="font-size: 18px;text-align: right;;color: #334155;font-weight: 600;">
+                    Ninguno</p>
+                <p style="font-size: 13px;text-align: right;color: #334155;font-weight: 400;padding-top: 10px;">Precio
+                    sin impuesto</p>
+                <p id="_priceNoTaxesEdit" class="price-total"
+                    style="font-size: 18px;text-align: right;;color: #334155;font-weight: 600;">
+                    $- COP</p>
+            </div>
+        </div>
+
+    </div>
+    <div id="form_buttons" class="form-actions" style="justify-content: center;align-items: center;display: none;">
+        <div style="width: 300px;margin-left: 800px;">
+            <button class="btn-close" id="c123rear">CANCELAR</button>
+            <button class="btn-save" id="crear" onclick="createProduct()">CREAR</button>
+        </div>
+
+    </div>
+
+    <div id="form_buttonsActualizar" class="form-actions" style="justify-content: center;align-items: center;display: none;">
+        <div style="width: 300px;margin-left: 800px;">
+            <button class="btn-close" id="c123rear">CANCELAR</button>
+
+            <button class="btn-save" id="crear2" onclick="updateProduct()">ACTUALIZAR</button>
+
+        </div>
+
+    </div>
+
+    <script src="_accountGroups.js"></script>
+    <script src="_buscador.js"></script>
+    <script src="autoScanner.js"></script>
+    <script src="_crearProducto.js"></script>
+    <script src="messages.js"></script>
+
+</body>
+
+</html> 
